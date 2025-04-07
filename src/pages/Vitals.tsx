@@ -3,7 +3,7 @@ import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Activity, Heart, Lung } from 'lucide-react';
+import { Activity, Heart, Stethoscope } from 'lucide-react';
 import { currentHealthData, mockHealthHistory } from '@/lib/mockData';
 import HealthChart from '@/components/dashboard/HealthChart';
 
@@ -86,7 +86,7 @@ const Vitals = () => {
           <Card className="bg-gradient-to-br from-white to-green-50 dark:from-gray-900 dark:to-gray-800">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-lg font-medium">Blood Pressure</CardTitle>
-              <Lung className="h-5 w-5 text-health-green" />
+              <Stethoscope className="h-5 w-5 text-health-green" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-center my-4">
@@ -100,7 +100,7 @@ const Vitals = () => {
               <div className="flex items-center justify-center mt-4">
                 <div className="h-24 w-24 rounded-full border-4 border-health-green flex items-center justify-center relative">
                   <div className="absolute inset-0 rounded-full border-4 border-health-green opacity-50"></div>
-                  <Lung className="h-10 w-10 text-health-green" />
+                  <Stethoscope className="h-10 w-10 text-health-green" />
                 </div>
               </div>
             </CardContent>
