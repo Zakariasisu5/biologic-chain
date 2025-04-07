@@ -12,6 +12,15 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
+// New page imports
+import HealthMetrics from "./pages/HealthMetrics";
+import Vitals from "./pages/Vitals";
+import Trends from "./pages/Trends";
+import Alerts from "./pages/Alerts";
+import Blockchain from "./pages/Blockchain";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -29,13 +38,13 @@ const App = () => (
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Index />} />
-              <Route path="/metrics" element={<Index />} />
-              <Route path="/vitals" element={<Index />} />
-              <Route path="/trends" element={<Index />} />
-              <Route path="/alerts" element={<Index />} />
-              <Route path="/blockchain" element={<Index />} />
-              <Route path="/profile" element={<Index />} />
-              <Route path="/settings" element={<Index />} />
+              <Route path="/metrics" element={<HealthMetrics />} />
+              <Route path="/vitals" element={<Vitals />} />
+              <Route path="/trends" element={<Trends />} />
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/blockchain" element={<Blockchain />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />
