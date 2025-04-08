@@ -44,7 +44,7 @@ const Layout = ({ children }: LayoutProps) => {
               <Sidebar />
             </SheetContent>
           
-            <div className="flex flex-col flex-1 w-full overflow-hidden">
+            <div className="flex flex-col flex-1 w-full h-screen overflow-hidden">
               <Header>
                 <Button 
                   variant="ghost" 
@@ -57,7 +57,7 @@ const Layout = ({ children }: LayoutProps) => {
                 </Button>
               </Header>
               <main className="flex-1 overflow-auto p-3 md:p-6">
-                <div className="container mx-auto max-w-7xl">
+                <div className="container mx-auto max-w-5xl px-2 sm:px-4">
                   {children}
                 </div>
               </main>
@@ -66,11 +66,13 @@ const Layout = ({ children }: LayoutProps) => {
         </>
       ) : (
         <>
-          <Sidebar />
-          <div className="flex flex-col flex-1 overflow-hidden">
+          <aside className="h-screen w-64 shrink-0 border-r border-border">
+            <Sidebar />
+          </aside>
+          <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
             <Header />
             <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
-              <div className="container mx-auto max-w-7xl">
+              <div className="container mx-auto max-w-5xl px-2 sm:px-4 lg:px-0">
                 {children}
               </div>
             </main>

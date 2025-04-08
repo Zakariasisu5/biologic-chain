@@ -35,7 +35,7 @@ const NavItem = ({ icon: Icon, title, path, active }: NavItemProps) => {
         )}
       >
         <Icon size={isMobile ? 24 : 20} />
-        <span className="text-base font-medium">{title}</span>
+        <span className="text-base font-medium truncate">{title}</span>
       </div>
     </Link>
   );
@@ -56,7 +56,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="h-full w-full bg-sidebar p-4 overflow-y-auto">
+    <div className="h-full w-full bg-sidebar p-4 flex flex-col overflow-hidden">
       <div className="flex items-center gap-2 mb-6 px-2">
         <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center">
           <Heart size={20} className="text-primary-foreground" />
@@ -64,7 +64,7 @@ const Sidebar = () => {
         <h1 className="text-xl font-bold">Aura Health</h1>
       </div>
 
-      <nav className="space-y-2">
+      <nav className="space-y-2 overflow-y-auto flex-1 pr-1">
         {navItems.map((item) => (
           <NavItem 
             key={item.path} 
