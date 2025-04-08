@@ -46,21 +46,21 @@ const Layout = ({ children }: LayoutProps) => {
             <SheetContent side="left" className="p-0 w-[80%] max-w-[280px] border-r">
               <Sidebar />
             </SheetContent>
-          </Sheet>
           
-          <div className="flex flex-col flex-1 w-full overflow-hidden">
-            <Header>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="mr-2" onClick={() => setSidebarOpen(true)}>
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </SheetTrigger>
-            </Header>
-            <main className="flex-1 overflow-auto p-3 md:p-4">
-              {children}
-            </main>
-          </div>
+            <div className="flex flex-col flex-1 w-full overflow-hidden">
+              <Header>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="mr-2">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Toggle menu</span>
+                  </Button>
+                </SheetTrigger>
+              </Header>
+              <main className="flex-1 overflow-auto p-3 md:p-4">
+                {children}
+              </main>
+            </div>
+          </Sheet>
         </>
       ) : (
         <>
