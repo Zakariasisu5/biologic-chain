@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -49,12 +49,15 @@ const Layout = ({ children }: LayoutProps) => {
           
             <div className="flex flex-col flex-1 w-full overflow-hidden">
               <Header>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="mr-2">
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle menu</span>
-                  </Button>
-                </SheetTrigger>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="mr-2"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
               </Header>
               <main className="flex-1 overflow-auto p-3 md:p-4">
                 {children}
