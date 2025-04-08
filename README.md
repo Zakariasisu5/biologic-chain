@@ -1,4 +1,4 @@
-# Welcome to your Biologic Chain project
+# Welcome to Biologic Chain project
 
 ## Project info
 
