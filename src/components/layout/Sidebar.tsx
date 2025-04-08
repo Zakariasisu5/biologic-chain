@@ -25,7 +25,7 @@ const NavItem = ({ icon: Icon, title, path, active }: NavItemProps) => {
   const isMobile = useIsMobile();
   
   return (
-    <Link to={path}>
+    <Link to={path} className="w-full">
       <div
         className={cn(
           'flex items-center gap-3 px-3 py-2 rounded-md transition-colors',
@@ -56,8 +56,8 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="h-full w-full md:w-60 border-r bg-sidebar p-4">
-      <div className="flex items-center gap-2 mb-8 px-3">
+    <div className="h-full w-full bg-sidebar p-4">
+      <div className="flex items-center gap-2 mb-6 px-2">
         <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
           <Heart size={18} className="text-primary-foreground" />
         </div>
