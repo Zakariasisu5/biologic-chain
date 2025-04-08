@@ -1,73 +1,20 @@
-# Welcome to your Lovable project
+# Welcome to your Biologic Chain project
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/15adca68-3524-4734-8e87-8e3732cd7f82
+**URL**: https://biologic-chain.vercel.app/
 
-## How can I edit this code?
+*![WhatsApp Image 2025-04-08 at 02 37 30_5c4eeeb9](https://github.com/user-attachments/assets/062de4d6-cb23-47f8-8863-aae313214ac9)
+*BioLogic Chain**  
+BioLogic Chain is a groundbreaking health technology platform that harnesses the power of artificial intelligence (AI) and blockchain to revolutionize predictive health monitoring and secure medical data management. The system integrates real-time health metrics from wearable devices with advanced AI algorithms to anticipate health risks, empowering users to take preventive actions before emergencies occur.  
 
-There are several ways of editing your application.
+By leveraging blockchain technology, BioLogic Chain ensures that sensitive medical data is stored securely, maintaining privacy while enabling transparent access for authorized healthcare professionals. The platform features an intelligent dashboard where users can track their health trends, receive personalized wellness recommendations, and benefit from a seamless emergency alert system that connects them to medical responders in critical situations.
 
-**Use Lovable**
+**BioLogic Chain**
+is designed to bridge the gap between technology and healthcare, making predictive health monitoring accessible, reliable, and tailored for diverse communities. Whether it's empowering individuals, improving patient outcomes, or supporting healthcare providers, BioLogic Chain is the ultimate fusion of biology, logic, and blockchain innovation.
+**images**
+![WhatsApp Image 2025-04-08 at 02 37 30_5c4eeeb9](https://github.com/user-attachments/assets/21b8e8ef-d4c9-435a-8cdb-1ef7667f2daa)
+![WhatsApp Image 2025-04-08 at 02 36 22_01b60b62](https://github.com/user-attachments/assets/1928e5f7-d4d8-40cc-a90e-c6f8d1887199)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/15adca68-3524-4734-8e87-8e3732cd7f82) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/15adca68-3524-4734-8e87-8e3732cd7f82) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+**Admin**
+![profile](https://github.com/user-attachments/assets/23d4bb3c-1610-400e-a45e-6bd18c2428a4)
