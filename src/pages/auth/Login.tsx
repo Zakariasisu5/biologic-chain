@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Heart } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -36,6 +37,23 @@ const Login = () => {
         title: "Success",
         description: "You have successfully logged in",
       });
+
+      // Log login activity
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) {
+        await supabase.from('user_activities').insert({
+          user_id: userData.user.id,
+          activity_type: 'login',
+          page: '/login',
+          details: { method: 'email' },
+          device_info: {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            platform: navigator.platform
+          }
+        });
+      }
+      
       navigate('/');
     } catch (error) {
       toast({

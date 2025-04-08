@@ -9,7 +9,8 @@ import {
   LineChart, 
   Settings, 
   Shield,
-  User
+  User,
+  History
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -51,6 +52,7 @@ const Sidebar = () => {
     { icon: LineChart, title: 'Trends', path: '/trends' },
     { icon: Bell, title: 'Alerts', path: '/alerts' },
     { icon: Shield, title: 'Blockchain', path: '/blockchain' },
+    { icon: History, title: 'Activities', path: '/activities' },
     { icon: User, title: 'Profile', path: '/profile' },
     { icon: Settings, title: 'Settings', path: '/settings' }
   ];

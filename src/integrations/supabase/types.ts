@@ -9,13 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      user_activities: {
+        Row: {
+          activity_type: string
+          created_at: string
+          details: Json | null
+          device_info: Json | null
+          id: string
+          ip_address: string | null
+          page: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          details?: Json | null
+          device_info?: Json | null
+          id?: string
+          ip_address?: string | null
+          page?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          details?: Json | null
+          device_info?: Json | null
+          id?: string
+          ip_address?: string | null
+          page?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

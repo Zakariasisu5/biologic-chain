@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ActivityTracker from "@/components/activity/ActivityTracker";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -20,6 +21,7 @@ import Alerts from "./pages/Alerts";
 import Blockchain from "./pages/Blockchain";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import UserActivities from "./pages/UserActivities";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ActivityTracker />
           <Routes>
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
@@ -45,6 +48,7 @@ const App = () => (
               <Route path="/blockchain" element={<Blockchain />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/activities" element={<UserActivities />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Heart } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -56,6 +57,23 @@ const Register = () => {
         title: "Success",
         description: "Your account has been created",
       });
+
+      // Log registration activity
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) {
+        await supabase.from('user_activities').insert({
+          user_id: userData.user.id,
+          activity_type: 'registration',
+          page: '/register',
+          details: { name },
+          device_info: {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            platform: navigator.platform
+          }
+        });
+      }
+      
       navigate('/');
     } catch (error) {
       toast({
