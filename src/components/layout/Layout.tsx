@@ -22,28 +22,25 @@ const Layout = ({ children }: LayoutProps) => {
     }
   }, [isMobile]);
 
-  // Force body to be fixed height on mobile to prevent scrolling issues
+  // Force body to be fixed height on mobile to prevent scrolling issues when sidebar is open
   useEffect(() => {
-    if (isMobile) {
-      document.body.style.height = '100%';
-      document.body.style.overflow = sidebarOpen ? 'hidden' : 'auto';
+    if (isMobile && sidebarOpen) {
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.height = '';
       document.body.style.overflow = '';
     }
     
     return () => {
-      document.body.style.height = '';
       document.body.style.overflow = '';
     };
   }, [isMobile, sidebarOpen]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen w-full overflow-hidden bg-background">
       {isMobile ? (
         <>
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-            <SheetContent side="left" className="p-0 w-[80%] max-w-[280px] border-r">
+            <SheetContent side="left" className="p-0 w-[85%] max-w-[300px] border-r">
               <Sidebar />
             </SheetContent>
           
@@ -59,8 +56,10 @@ const Layout = ({ children }: LayoutProps) => {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </Header>
-              <main className="flex-1 overflow-auto p-3 md:p-4">
-                {children}
+              <main className="flex-1 overflow-auto p-3 md:p-6">
+                <div className="container mx-auto max-w-7xl">
+                  {children}
+                </div>
               </main>
             </div>
           </Sheet>
@@ -70,8 +69,10 @@ const Layout = ({ children }: LayoutProps) => {
           <Sidebar />
           <div className="flex flex-col flex-1 overflow-hidden">
             <Header />
-            <main className="flex-1 overflow-auto p-4 md:p-6">
-              {children}
+            <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
+              <div className="container mx-auto max-w-7xl">
+                {children}
+              </div>
             </main>
           </div>
         </>

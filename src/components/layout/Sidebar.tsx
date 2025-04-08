@@ -34,8 +34,8 @@ const NavItem = ({ icon: Icon, title, path, active }: NavItemProps) => {
             : 'hover:bg-secondary/50'
         )}
       >
-        <Icon size={isMobile ? 22 : 20} />
-        <span className="text-sm md:text-base">{title}</span>
+        <Icon size={isMobile ? 24 : 20} />
+        <span className="text-base font-medium">{title}</span>
       </div>
     </Link>
   );
@@ -56,15 +56,15 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="h-full w-full bg-sidebar p-4">
+    <div className="h-full w-full bg-sidebar p-4 overflow-y-auto">
       <div className="flex items-center gap-2 mb-6 px-2">
-        <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-          <Heart size={18} className="text-primary-foreground" />
+        <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center">
+          <Heart size={20} className="text-primary-foreground" />
         </div>
         <h1 className="text-xl font-bold">Aura Health</h1>
       </div>
 
-      <nav className="space-y-1">
+      <nav className="space-y-2">
         {navItems.map((item) => (
           <NavItem 
             key={item.path} 
