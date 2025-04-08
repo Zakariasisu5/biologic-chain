@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
   Activity, 
@@ -12,6 +12,7 @@ import {
   User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type NavItemProps = {
   icon: React.ElementType;
@@ -20,24 +21,28 @@ type NavItemProps = {
   active?: boolean;
 };
 
-const NavItem = ({ icon: Icon, title, path, active }: NavItemProps) => (
-  <Link to={path}>
-    <div
-      className={cn(
-        'flex items-center gap-3 px-3 py-2 rounded-md transition-colors',
-        active 
-          ? 'bg-primary text-primary-foreground' 
-          : 'hover:bg-secondary/50'
-      )}
-    >
-      <Icon size={20} />
-      <span>{title}</span>
-    </div>
-  </Link>
-);
+const NavItem = ({ icon: Icon, title, path, active }: NavItemProps) => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <Link to={path}>
+      <div
+        className={cn(
+          'flex items-center gap-3 px-3 py-2 rounded-md transition-colors',
+          active 
+            ? 'bg-primary text-primary-foreground' 
+            : 'hover:bg-secondary/50'
+        )}
+      >
+        <Icon size={isMobile ? 22 : 20} />
+        <span className="text-sm md:text-base">{title}</span>
+      </div>
+    </Link>
+  );
+};
 
 const Sidebar = () => {
-  const pathname = window.location.pathname;
+  const location = useLocation();
   
   const navItems = [
     { icon: Home, title: 'Dashboard', path: '/' },
@@ -51,8 +56,8 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="h-screen w-60 border-r bg-sidebar p-4">
-      <div className="flex items-center gap-2 mb-10 px-3">
+    <div className="h-full w-full md:w-60 border-r bg-sidebar p-4">
+      <div className="flex items-center gap-2 mb-8 px-3">
         <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
           <Heart size={18} className="text-primary-foreground" />
         </div>
@@ -64,7 +69,7 @@ const Sidebar = () => {
           <NavItem 
             key={item.path} 
             {...item} 
-            active={pathname === item.path} 
+            active={location.pathname === item.path} 
           />
         ))}
       </nav>
