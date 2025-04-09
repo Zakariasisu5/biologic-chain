@@ -285,8 +285,8 @@ const Blockchain = () => {
                   
                   <div className="flex justify-end gap-2">
                     <Button variant="outline">Upload File</Button>
-                    <Button disabled={!isConnected}>
-                      {isConnected ? "Submit to Blockchain" : "Connect Wallet to Submit"}
+                    <Button disabled={!walletInfo.isConnected}>
+                      {walletInfo.isConnected ? "Submit to Blockchain" : "Connect Wallet to Submit"}
                     </Button>
                   </div>
                 </div>
