@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Upload, File, FileVideo, FileImage, X, AlertCircle } from 'lucide-react';
+import { Upload, File, FileVideo, FileImage, X, AlertCircle, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
@@ -27,31 +27,73 @@ export function FileUploader({
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [bucketExists, setBucketExists] = useState(false);
+  const [bucketStatus, setBucketStatus] = useState<'checking' | 'available' | 'unavailable'>('checking');
   const { toast } = useToast();
   const { currentUser } = useAuth();
   const { trackActivity } = useActivityTracker();
 
-  // Check if the bucket exists
+  // Check if the bucket exists and is accessible
   useEffect(() => {
     const checkBucket = async () => {
       try {
-        // Try to get bucket details
-        const { data, error } = await supabase.storage.getBucket('user-files');
-        if (!error && data) {
-          setBucketExists(true);
+        if (!currentUser?.id) {
+          console.log('No authenticated user, storage access will be limited');
+          setBucketStatus('unavailable');
+          return;
+        }
+
+        // List buckets to check access
+        const { data, error } = await supabase.storage.listBuckets();
+        
+        if (error) {
+          console.error('Error checking storage buckets:', error);
+          setBucketStatus('unavailable');
+          return;
+        }
+        
+        const userFilesBucket = data.find(bucket => bucket.name === 'user-files');
+        if (userFilesBucket) {
+          console.log('user-files bucket found and accessible');
+          setBucketStatus('available');
         } else {
-          console.error('Storage bucket not found:', error);
-          setBucketExists(false);
+          console.error('user-files bucket not found in available buckets');
+          setBucketStatus('unavailable');
         }
       } catch (err) {
-        console.error('Error checking bucket:', err);
-        setBucketExists(false);
+        console.error('Error checking bucket access:', err);
+        setBucketStatus('unavailable');
       }
     };
     
     checkBucket();
-  }, []);
+  }, [currentUser?.id]);
+
+  // Simulate progress during upload
+  useEffect(() => {
+    let interval: number | undefined;
+    
+    if (uploading) {
+      interval = window.setInterval(() => {
+        setProgress(prev => {
+          // Start slow, accelerate in the middle, then decelerate near completion
+          const increment = prev < 30 ? 2 : prev < 70 ? 5 : 1;
+          const next = Math.min(prev + increment, 95); // Never reach 100 automatically
+          return next;
+        });
+      }, 200);
+    } else if (progress === 100) {
+      // Reset progress after a delay when complete
+      const timeout = window.setTimeout(() => {
+        setProgress(0);
+      }, 2000);
+      
+      return () => clearTimeout(timeout);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [uploading, progress]);
 
   // Determine accepted file types
   const getAcceptedFileTypes = () => {
@@ -100,9 +142,16 @@ export function FileUploader({
 
   // Upload file to Supabase storage
   const uploadFile = async () => {
-    if (!file || !currentUser?.id) return;
+    if (!file || !currentUser?.id) {
+      toast({
+        variant: 'destructive',
+        title: 'Authentication required',
+        description: 'You must be logged in to upload files.',
+      });
+      return;
+    }
     
-    if (!bucketExists) {
+    if (bucketStatus !== 'available') {
       setError('Storage not available. Please try again later or contact support.');
       toast({
         variant: 'destructive',
@@ -113,7 +162,7 @@ export function FileUploader({
     }
     
     setUploading(true);
-    setProgress(0);
+    setProgress(5); // Start at 5%
     setError(null);
     
     try {
@@ -122,22 +171,30 @@ export function FileUploader({
       const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
       const filePath = `${currentUser.id}/${fileName}`;
       
+      console.log('Uploading file to path:', filePath);
+      
       // Upload to Supabase
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from('user-files')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false,
         });
       
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+      
+      console.log('Upload successful:', data);
       
       // Get public URL
-      const { data } = supabase.storage
+      const { data: urlData } = supabase.storage
         .from('user-files')
         .getPublicUrl(filePath);
       
-      const publicUrl = data.publicUrl;
+      const publicUrl = urlData.publicUrl;
+      console.log('Public URL:', publicUrl);
       
       // Track activity
       if (currentUser.id) {
@@ -147,6 +204,9 @@ export function FileUploader({
           fileSize: file.size
         });
       }
+      
+      // Set progress to 100% to indicate completion
+      setProgress(100);
       
       toast({
         title: 'File uploaded successfully',
@@ -158,11 +218,13 @@ export function FileUploader({
         onUploadComplete(publicUrl);
       }
       
-      // Reset file state
-      setFile(null);
-    } catch (error) {
+      // Reset file state after a short delay
+      setTimeout(() => {
+        setFile(null);
+      }, 2000);
+    } catch (error: any) {
       console.error('Error uploading file:', error);
-      setError('Failed to upload file. Please try again later.');
+      setError(`Failed to upload file: ${error.message || 'Unknown error'}`);
       
       toast({
         variant: 'destructive',
@@ -171,7 +233,6 @@ export function FileUploader({
       });
     } finally {
       setUploading(false);
-      setProgress(100);
     }
   };
 
@@ -180,7 +241,7 @@ export function FileUploader({
       <div className="flex flex-col items-center justify-center space-y-4">
         <div className="flex items-center justify-center w-full">
           <label
-            htmlFor="file-upload"
+            htmlFor={`file-upload-${type}`}
             className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer
               ${error ? 'border-destructive bg-destructive/10' : 'border-gray-300 hover:border-primary bg-gray-50 hover:bg-gray-100'}`}
           >
@@ -192,12 +253,12 @@ export function FileUploader({
               <p className="text-xs text-gray-500">Max size: {maxSizeMB}MB</p>
             </div>
             <input
-              id="file-upload"
+              id={`file-upload-${type}`}
               type="file"
               className="hidden"
               accept={getAcceptedFileTypes()}
               onChange={handleFileChange}
-              disabled={uploading}
+              disabled={uploading || !currentUser?.id || bucketStatus !== 'available'}
             />
           </label>
         </div>
@@ -209,23 +270,44 @@ export function FileUploader({
           </div>
         )}
         
-        {!bucketExists && (
+        {bucketStatus === 'checking' && (
+          <div className="flex items-center text-muted-foreground text-sm gap-1">
+            <Upload className="h-4 w-4 animate-pulse" />
+            <span>Checking storage availability...</span>
+          </div>
+        )}
+        
+        {bucketStatus === 'unavailable' && !currentUser?.id && (
+          <div className="flex items-center text-amber-500 text-sm gap-1">
+            <AlertCircle className="h-4 w-4" />
+            <span>Please login to upload files</span>
+          </div>
+        )}
+        
+        {bucketStatus === 'unavailable' && currentUser?.id && (
           <div className="flex items-center text-amber-500 text-sm gap-1">
             <AlertCircle className="h-4 w-4" />
             <span>Storage is currently unavailable</span>
           </div>
         )}
+
+        {bucketStatus === 'available' && currentUser?.id && (
+          <div className="flex items-center text-green-500 text-sm gap-1">
+            <Check className="h-4 w-4" />
+            <span>Storage is ready</span>
+          </div>
+        )}
         
         {file && (
           <div className="w-full space-y-2">
-            {uploading && (
+            {(uploading || progress > 0) && (
               <Progress value={progress} className="h-2 w-full" />
             )}
             <div className="flex gap-2">
               <Button 
                 className="flex-1" 
                 onClick={uploadFile} 
-                disabled={uploading || !bucketExists}
+                disabled={uploading || !currentUser?.id || bucketStatus !== 'available'}
               >
                 <Upload className="h-4 w-4 mr-2" />
                 {uploading ? 'Uploading...' : 'Upload'}
