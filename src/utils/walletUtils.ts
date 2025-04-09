@@ -36,7 +36,12 @@ export const connectWallet = async (): Promise<WalletInfo> => {
     }
     
     // Request account access
-    const provider = new ethers.BrowserProvider(window.ethereum);
+    // Ensure ethereum has the required request method for BrowserProvider
+    if (!window.ethereum.request) {
+      throw new Error("Ethereum provider doesn't support required methods");
+    }
+    
+    const provider = new ethers.BrowserProvider(window.ethereum as ethers.Eip1193Provider);
     await provider.send("eth_requestAccounts", []);
     
     const signer = await provider.getSigner();
