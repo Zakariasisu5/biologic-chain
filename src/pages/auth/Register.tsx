@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Heart } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { useActivityTracker } from '@/utils/activityTracker';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -18,6 +18,7 @@ const Register = () => {
   const { register } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { trackActivity } = useActivityTracker();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,21 +59,8 @@ const Register = () => {
         description: "Your account has been created",
       });
 
-      // Log registration activity
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user) {
-        await supabase.from('user_activities').insert({
-          user_id: userData.user.id,
-          activity_type: 'registration',
-          page: '/register',
-          details: { name },
-          device_info: {
-            userAgent: navigator.userAgent,
-            language: navigator.language,
-            platform: navigator.platform
-          }
-        });
-      }
+      // Log registration activity using the activity tracker
+      trackActivity('registration', '/register', { name });
       
       navigate('/');
     } catch (error) {

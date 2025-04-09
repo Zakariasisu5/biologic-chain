@@ -21,7 +21,8 @@ export const ActivityTracker = () => {
         '/alerts': 'Alerts',
         '/blockchain': 'Blockchain',
         '/profile': 'User Profile',
-        '/settings': 'Settings'
+        '/settings': 'Settings',
+        '/activities': 'Activity History'
       };
       
       const pageName = pathToPageName[location.pathname] || location.pathname;

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Heart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useActivityTracker } from '@/utils/activityTracker';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -16,6 +17,7 @@ const Login = () => {
   const { login } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { trackActivity } = useActivityTracker();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,21 +40,8 @@ const Login = () => {
         description: "You have successfully logged in",
       });
 
-      // Log login activity
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user) {
-        await supabase.from('user_activities').insert({
-          user_id: userData.user.id,
-          activity_type: 'login',
-          page: '/login',
-          details: { method: 'email' },
-          device_info: {
-            userAgent: navigator.userAgent,
-            language: navigator.language,
-            platform: navigator.platform
-          }
-        });
-      }
+      // Log login activity using the activity tracker
+      trackActivity('login', '/login', { method: 'email' });
       
       navigate('/');
     } catch (error) {

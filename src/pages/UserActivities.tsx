@@ -48,15 +48,14 @@ const UserActivities = () => {
     queryFn: async () => {
       let query = supabase
         .from('user_activities')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*') as any; // Using 'as any' to bypass TypeScript checking temporarily
       
       // Apply filter if not 'all'
       if (filter !== 'all') {
         query = query.eq('activity_type', filter);
       }
       
-      const { data, error } = await query;
+      const { data, error } = await query.order('created_at', { ascending: false });
       
       if (error) throw error;
       return data as UserActivity[];
@@ -86,7 +85,8 @@ const UserActivities = () => {
       view_vitals: 'bg-indigo-500',
       view_alerts: 'bg-red-500',
       view_blockchain: 'bg-amber-500',
-      update_settings: 'bg-fuchsia-500'
+      update_settings: 'bg-fuchsia-500',
+      registration: 'bg-cyan-500'
     };
     
     return colors[type] || 'bg-gray-500';
@@ -121,6 +121,7 @@ const UserActivities = () => {
                 <SelectItem value="view_alerts">Alerts</SelectItem>
                 <SelectItem value="view_blockchain">Blockchain</SelectItem>
                 <SelectItem value="update_settings">Settings</SelectItem>
+                <SelectItem value="registration">Registration</SelectItem>
               </SelectContent>
             </Select>
           </div>
