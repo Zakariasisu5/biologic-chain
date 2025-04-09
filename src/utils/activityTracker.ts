@@ -15,7 +15,9 @@ export type ActivityType =
   | 'registration'
   | 'upload_file'
   | 'download_file'
-  | 'export_medical_history'; // Added file-related activity types
+  | 'export_medical_history'
+  | 'connect_wallet'
+  | 'disconnect_wallet'; // Added wallet-related activity types
 
 interface ActivityDetails {
   [key: string]: any;

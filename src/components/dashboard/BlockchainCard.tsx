@@ -1,9 +1,11 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Check } from 'lucide-react';
+import { Shield, Check, Wallet } from 'lucide-react';
 import { BlockchainData } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface BlockchainCardProps {
   data: BlockchainData[];
@@ -11,6 +13,8 @@ interface BlockchainCardProps {
 }
 
 const BlockchainCard = ({ data, className }: BlockchainCardProps) => {
+  const navigate = useNavigate();
+  
   return (
     <Card className={cn("", className)}>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -44,10 +48,19 @@ const BlockchainCard = ({ data, className }: BlockchainCardProps) => {
             </div>
           ))}
         </div>
-        <div className="mt-4">
-          <p className="text-sm text-center text-muted-foreground">
+        <div className="mt-4 flex flex-col items-center">
+          <p className="text-sm text-center text-muted-foreground mb-2">
             Your health data is securely stored on blockchain
           </p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-1"
+            onClick={() => navigate('/blockchain')}
+          >
+            <Wallet className="h-4 w-4" />
+            Connect Wallet
+          </Button>
         </div>
       </CardContent>
     </Card>

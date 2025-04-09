@@ -1,19 +1,25 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { mockBlockchainData } from '@/lib/mockData';
-import { Search, Shield, Check, ExternalLink, Key, RefreshCw, UploadCloud } from 'lucide-react';
+import { Search, Shield, Check, ExternalLink, RefreshCw, UploadCloud } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import WalletConnect from '@/components/blockchain/WalletConnect';
+import { WalletInfo, defaultWalletInfo, setupWalletEventListeners } from '@/utils/walletUtils';
+import { useActivityTracker } from '@/utils/activityTracker';
+import { useToast } from '@/hooks/use-toast';
 
 const Blockchain = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isConnected, setIsConnected] = useState(false);
+  const [walletInfo, setWalletInfo] = useState<WalletInfo>(defaultWalletInfo);
+  const { trackActivity } = useActivityTracker();
+  const { toast } = useToast();
 
   // Extended blockchain data for this page
   const extendedBlockchainData = [
@@ -47,8 +53,42 @@ const Blockchain = () => {
     record.blockNumber.toString().includes(searchQuery)
   );
 
-  const connectWallet = () => {
-    setIsConnected(true);
+  useEffect(() => {
+    // Track page view
+    trackActivity('view_blockchain');
+
+    // Set up wallet event listeners
+    const handleAccountsChanged = (accounts: string[]) => {
+      if (accounts.length === 0) {
+        // User disconnected wallet
+        setWalletInfo(defaultWalletInfo);
+        toast({
+          title: "Wallet Disconnected",
+          description: "Your wallet has been disconnected",
+          variant: "default"
+        });
+      }
+    };
+
+    const handleChainChanged = (chainId: string) => {
+      // Reload the page when chain changes
+      window.location.reload();
+    };
+
+    const cleanup = setupWalletEventListeners(
+      handleAccountsChanged,
+      handleChainChanged
+    );
+
+    return cleanup;
+  }, []);
+
+  const handleWalletConnect = (info: WalletInfo) => {
+    setWalletInfo(info);
+  };
+
+  const handleWalletDisconnect = () => {
+    setWalletInfo(defaultWalletInfo);
   };
 
   return (
@@ -60,50 +100,12 @@ const Blockchain = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="md:col-span-2">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Wallet Connection</CardTitle>
-                <CardDescription>Connect your wallet to manage health records</CardDescription>
-              </div>
-              <Shield className="h-5 w-5 text-health-purple" />
-            </CardHeader>
-            <CardContent>
-              {isConnected ? (
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Wallet Connected</p>
-                      <p className="text-sm text-muted-foreground">0x71C...F3a2</p>
-                    </div>
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-                      <Check className="h-3 w-3 mr-1" /> Connected
-                    </Badge>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <Key className="h-4 w-4" />
-                      View Keys
-                    </Button>
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <UploadCloud className="h-4 w-4" />
-                      Backup Data
-                    </Button>
-                    <Button variant="destructive" size="sm" onClick={() => setIsConnected(false)}>
-                      Disconnect
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  <p className="text-sm">Connect your Ethereum wallet to securely manage your health records on the blockchain.</p>
-                  <Button onClick={connectWallet} className="w-full sm:w-auto">
-                    Connect Wallet
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <WalletConnect
+            className="md:col-span-2"
+            walletInfo={walletInfo}
+            onWalletConnect={handleWalletConnect}
+            onWalletDisconnect={handleWalletDisconnect}
+          />
 
           <Card>
             <CardHeader>
@@ -123,7 +125,9 @@ const Blockchain = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Network</p>
-                  <p className="text-lg font-medium">Ethereum Mainnet</p>
+                  <p className="text-lg font-medium">
+                    {walletInfo.isConnected ? walletInfo.network : "Not Connected"}
+                  </p>
                 </div>
               </div>
             </CardContent>
