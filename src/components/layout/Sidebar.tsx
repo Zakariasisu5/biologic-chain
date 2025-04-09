@@ -61,9 +61,9 @@ const Sidebar = () => {
     <div className="h-full w-full bg-sidebar p-4 flex flex-col overflow-hidden">
       <div className="flex items-center gap-2 mb-6 px-2">
         <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center">
-          <Heart size={20} className="text-primary-foreground" />
+          <Shield size={20} className="text-primary-foreground" />
         </div>
-        <h1 className="text-xl font-bold">Aura Health</h1>
+        <h1 className="text-xl font-bold">Biologic Chain</h1>
       </div>
 
       <nav className="space-y-2 overflow-y-auto flex-1 pr-1">

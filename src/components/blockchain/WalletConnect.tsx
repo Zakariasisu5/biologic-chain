@@ -3,10 +3,16 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Key, UploadCloud, Wallet, ExternalLink } from 'lucide-react';
+import { Check, Key, UploadCloud, Wallet, ExternalLink, Info } from 'lucide-react';
 import { WalletInfo, connectWallet, disconnectWallet, isWalletInstalled } from '@/utils/walletUtils';
 import { useToast } from '@/hooks/use-toast';
 import { useActivityTracker } from '@/utils/activityTracker';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider
+} from '@/components/ui/tooltip';
 
 interface WalletConnectProps {
   walletInfo: WalletInfo;
@@ -24,9 +30,10 @@ const WalletConnect: React.FC<WalletConnectProps> = ({
   const [isConnecting, setIsConnecting] = useState(false);
   const { toast } = useToast();
   const { trackActivity } = useActivityTracker();
+  const walletDetected = isWalletInstalled();
 
   const handleConnectWallet = async () => {
-    if (!isWalletInstalled()) {
+    if (!walletDetected) {
       toast({
         title: "Wallet Not Found",
         description: "Please install MetaMask or another Ethereum wallet to connect.",
@@ -94,6 +101,43 @@ const WalletConnect: React.FC<WalletConnectProps> = ({
     window.open(`${baseUrl}${walletInfo.address}`, '_blank');
   };
 
+  const renderWalletButton = () => {
+    if (!walletDetected) {
+      return (
+        <div className="flex flex-col items-start gap-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                onClick={() => window.open('https://metamask.io/download/', '_blank')} 
+                className="w-full sm:w-auto gap-1"
+              >
+                Install MetaMask <Wallet className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>Click to visit MetaMask website to install the wallet</p>
+            </TooltipContent>
+          </Tooltip>
+          <div className="flex items-center text-xs text-muted-foreground gap-1">
+            <Info className="h-3 w-3" />
+            <span>A wallet is required to use blockchain features</span>
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <Button 
+        onClick={handleConnectWallet} 
+        className="w-full sm:w-auto gap-1"
+        disabled={isConnecting}
+      >
+        {isConnecting ? "Connecting..." : "Connect Wallet"}
+        <Wallet className="h-4 w-4" />
+      </Button>
+    );
+  };
+
   return (
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -158,14 +202,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({
         ) : (
           <div className="flex flex-col gap-4">
             <p className="text-sm">Connect your Ethereum wallet to securely manage your health records on the blockchain.</p>
-            <Button 
-              onClick={handleConnectWallet} 
-              className="w-full sm:w-auto gap-1"
-              disabled={isConnecting}
-            >
-              {isConnecting ? "Connecting..." : "Connect Wallet"}
-              <Wallet className="h-4 w-4" />
-            </Button>
+            {renderWalletButton()}
           </div>
         )}
       </CardContent>
