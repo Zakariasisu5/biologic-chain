@@ -21,6 +21,12 @@ interface ActivityDetails {
   [key: string]: any;
 }
 
+// Helper function to check if a string is a valid UUID
+function isValidUUID(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
 export const logUserActivity = async (
   userId: string,
   activityType: ActivityType,
@@ -28,6 +34,12 @@ export const logUserActivity = async (
   details?: ActivityDetails
 ) => {
   try {
+    // Validate userId format to avoid SQL errors
+    if (!userId || !isValidUUID(userId)) {
+      console.error('Invalid user ID format for activity logging');
+      return; // Skip logging if invalid ID
+    }
+
     // Get browser and device info
     const deviceInfo = {
       userAgent: navigator.userAgent,
@@ -67,8 +79,11 @@ export const useActivityTracker = () => {
     page?: string,
     details?: ActivityDetails
   ) => {
-    if (currentUser?.id) {
+    if (currentUser?.id && isValidUUID(currentUser.id)) {
       logUserActivity(currentUser.id, activityType, page, details);
+    } else {
+      // Skip tracking if user ID is invalid
+      console.log('Skipping activity tracking: Invalid user ID');
     }
   };
   

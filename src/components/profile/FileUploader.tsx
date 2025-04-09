@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload, File, FileVideo, FileImage, X, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -27,9 +27,31 @@ export function FileUploader({
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [bucketExists, setBucketExists] = useState(false);
   const { toast } = useToast();
   const { currentUser } = useAuth();
   const { trackActivity } = useActivityTracker();
+
+  // Check if the bucket exists
+  useEffect(() => {
+    const checkBucket = async () => {
+      try {
+        // Try to get bucket details
+        const { data, error } = await supabase.storage.getBucket('user-files');
+        if (!error && data) {
+          setBucketExists(true);
+        } else {
+          console.error('Storage bucket not found:', error);
+          setBucketExists(false);
+        }
+      } catch (err) {
+        console.error('Error checking bucket:', err);
+        setBucketExists(false);
+      }
+    };
+    
+    checkBucket();
+  }, []);
 
   // Determine accepted file types
   const getAcceptedFileTypes = () => {
@@ -80,6 +102,16 @@ export function FileUploader({
   const uploadFile = async () => {
     if (!file || !currentUser?.id) return;
     
+    if (!bucketExists) {
+      setError('Storage not available. Please try again later or contact support.');
+      toast({
+        variant: 'destructive',
+        title: 'Storage Error',
+        description: 'File storage is not available at this time.',
+      });
+      return;
+    }
+    
     setUploading(true);
     setProgress(0);
     setError(null);
@@ -92,7 +124,7 @@ export function FileUploader({
       
       // Upload to Supabase
       const { error: uploadError } = await supabase.storage
-        .from('user_files')
+        .from('user-files')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false,
@@ -102,17 +134,19 @@ export function FileUploader({
       
       // Get public URL
       const { data } = supabase.storage
-        .from('user_files')
+        .from('user-files')
         .getPublicUrl(filePath);
       
       const publicUrl = data.publicUrl;
       
       // Track activity
-      trackActivity('upload_file', '/profile', {
-        fileType: file.type,
-        fileName: file.name,
-        fileSize: file.size
-      });
+      if (currentUser.id) {
+        trackActivity('upload_file', '/profile', {
+          fileType: file.type,
+          fileName: file.name,
+          fileSize: file.size
+        });
+      }
       
       toast({
         title: 'File uploaded successfully',
@@ -175,6 +209,13 @@ export function FileUploader({
           </div>
         )}
         
+        {!bucketExists && (
+          <div className="flex items-center text-amber-500 text-sm gap-1">
+            <AlertCircle className="h-4 w-4" />
+            <span>Storage is currently unavailable</span>
+          </div>
+        )}
+        
         {file && (
           <div className="w-full space-y-2">
             {uploading && (
@@ -184,7 +225,7 @@ export function FileUploader({
               <Button 
                 className="flex-1" 
                 onClick={uploadFile} 
-                disabled={uploading}
+                disabled={uploading || !bucketExists}
               >
                 <Upload className="h-4 w-4 mr-2" />
                 {uploading ? 'Uploading...' : 'Upload'}
@@ -204,4 +245,3 @@ export function FileUploader({
     </div>
   );
 }
-

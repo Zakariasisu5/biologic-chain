@@ -41,6 +41,16 @@ export function ExportMedicalHistory() {
     };
   };
 
+  const safelyTrackActivity = (activityType: 'export_medical_history', format: string) => {
+    if (currentUser?.id) {
+      try {
+        trackActivity(activityType, '/profile', { format });
+      } catch (error) {
+        console.error('Error tracking activity:', error);
+      }
+    }
+  };
+
   const exportAsJson = () => {
     setIsExporting(true);
     
@@ -67,7 +77,7 @@ export function ExportMedicalHistory() {
       URL.revokeObjectURL(url);
       
       // Track this activity
-      trackActivity('export_medical_history', '/profile', { format: 'json' });
+      safelyTrackActivity('export_medical_history', 'json');
       
       // Show success message
       toast({
@@ -95,7 +105,7 @@ export function ExportMedicalHistory() {
     // This is a mock function - in a real app you would generate a PDF
     // using a library like jspdf or by calling a backend API
     setTimeout(() => {
-      trackActivity('export_medical_history', '/profile', { format: 'pdf' });
+      safelyTrackActivity('export_medical_history', 'pdf');
       
       toast({
         title: 'Medical History Exported',
@@ -160,4 +170,3 @@ export function ExportMedicalHistory() {
     </>
   );
 }
-
