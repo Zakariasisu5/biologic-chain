@@ -7,14 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
-import { User, Edit, Save, Key, Shield, Download, Upload, Lock, CreditCard, AlertCircle } from 'lucide-react';
+import { User, Edit, Save, Key, Shield, Download, Upload, Lock, CreditCard, AlertCircle, FileImage, FileVideo, File } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { FileUploader } from '@/components/profile/FileUploader';
+import { ExportMedicalHistory } from '@/components/profile/ExportMedicalHistory';
+import { useActivityTracker } from '@/utils/activityTracker';
 
 const Profile = () => {
   const { currentUser, logout } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const { trackActivity } = useActivityTracker();
   const [profileData, setProfileData] = useState({
     name: currentUser?.name || 'John Doe',
     email: currentUser?.email || 'john@example.com',
@@ -29,6 +33,8 @@ const Profile = () => {
     weight: '175 lbs',
   });
 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProfileData({
@@ -39,9 +45,18 @@ const Profile = () => {
 
   const handleSave = () => {
     setIsEditing(false);
+    trackActivity('update_profile', '/profile', { fields: ['name', 'email', 'phone', 'address'] });
     toast({
       title: "Profile updated",
       description: "Your profile information has been saved successfully.",
+    });
+  };
+
+  const handleProfileImageUpload = (filePath: string) => {
+    setProfileImage(filePath);
+    toast({
+      title: "Profile photo updated",
+      description: "Your profile photo has been updated successfully.",
     });
   };
 
@@ -57,7 +72,7 @@ const Profile = () => {
           <Card className="md:w-1/3">
             <CardContent className="pt-6 flex flex-col items-center">
               <Avatar className="h-24 w-24">
-                <AvatarImage src="" />
+                <AvatarImage src={profileImage || ""} />
                 <AvatarFallback className="text-2xl">{profileData.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <h2 className="mt-4 text-xl font-semibold">{profileData.name}</h2>
@@ -65,13 +80,15 @@ const Profile = () => {
               <Badge className="mt-2 bg-primary text-primary-foreground">
                 {currentUser?.plan || 'Premium'} Plan
               </Badge>
-              <div className="flex gap-2 mt-4 w-full">
-                <Button className="flex-1" variant="outline">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Photo
-                </Button>
+              <div className="w-full mt-4">
+                <FileUploader
+                  type="image" 
+                  maxSizeMB={5}
+                  onUploadComplete={handleProfileImageUpload}
+                  className="mb-4"
+                />
                 <Button
-                  className="flex-1"
+                  className="w-full"
                   variant={isEditing ? "default" : "outline"}
                   onClick={() => setIsEditing(!isEditing)}
                 >
@@ -83,7 +100,7 @@ const Profile = () => {
                   ) : (
                     <>
                       <Edit className="h-4 w-4 mr-2" />
-                      Edit
+                      Edit Profile
                     </>
                   )}
                 </Button>
@@ -93,7 +110,7 @@ const Profile = () => {
 
           <div className="md:w-2/3">
             <Tabs defaultValue="personal">
-              <TabsList className="grid grid-cols-3">
+              <TabsList className="grid grid-cols-4">
                 <TabsTrigger value="personal">
                   <User className="h-4 w-4 mr-2" />
                   Personal
@@ -101,6 +118,10 @@ const Profile = () => {
                 <TabsTrigger value="medical">
                   <Shield className="h-4 w-4 mr-2" />
                   Medical
+                </TabsTrigger>
+                <TabsTrigger value="documents">
+                  <File className="h-4 w-4 mr-2" />
+                  Documents
                 </TabsTrigger>
                 <TabsTrigger value="security">
                   <Lock className="h-4 w-4 mr-2" />
@@ -255,13 +276,56 @@ const Profile = () => {
                       </div>
                       
                       <div className="flex justify-between items-center mt-4">
-                        <Button variant="outline" className="flex gap-1">
-                          <Download className="h-4 w-4" />
-                          Export Medical History
-                        </Button>
+                        <ExportMedicalHistory />
                         {isEditing && (
                           <Button onClick={handleSave}>Save Changes</Button>
                         )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="documents" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Documents & Media</CardTitle>
+                    <CardDescription>Upload and manage your health-related documents and media</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-medium mb-2">Upload Files</h3>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                          <div>
+                            <h4 className="text-sm font-medium flex items-center mb-2">
+                              <FileImage className="h-4 w-4 mr-1" />
+                              Images
+                            </h4>
+                            <FileUploader type="image" maxSizeMB={10} />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-medium flex items-center mb-2">
+                              <FileVideo className="h-4 w-4 mr-1" />
+                              Videos
+                            </h4>
+                            <FileUploader type="video" maxSizeMB={100} />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-medium flex items-center mb-2">
+                              <File className="h-4 w-4 mr-1" />
+                              Documents
+                            </h4>
+                            <FileUploader type="document" maxSizeMB={20} />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-medium mb-2">Recent Uploads</h3>
+                        <div className="border rounded-md p-4 text-center text-muted-foreground text-sm">
+                          No recent uploads. Upload files to see them here.
+                        </div>
                       </div>
                     </div>
                   </CardContent>

@@ -12,7 +12,10 @@ export type ActivityType =
   | 'view_alerts'
   | 'update_settings'
   | 'view_blockchain'
-  | 'registration'; // Added registration activity type
+  | 'registration'
+  | 'upload_file'
+  | 'download_file'
+  | 'export_medical_history'; // Added file-related activity types
 
 interface ActivityDetails {
   [key: string]: any;
