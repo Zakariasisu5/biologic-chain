@@ -1,21 +1,19 @@
 
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
-import { User, Edit, Save, Key, Shield, Download, Upload, Lock, CreditCard, AlertCircle, FileImage, FileVideo, File } from 'lucide-react';
+import { User, Shield, File, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
-import { FileUploader } from '@/components/profile/FileUploader';
-import { ExportMedicalHistory } from '@/components/profile/ExportMedicalHistory';
 import { useActivityTracker } from '@/utils/activityTracker';
+import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
+import { PersonalInfoTab } from '@/components/profile/PersonalInfoTab';
+import { MedicalInfoTab } from '@/components/profile/MedicalInfoTab';
+import { DocumentsTab } from '@/components/profile/DocumentsTab';
+import { SecurityTab } from '@/components/profile/SecurityTab';
 
 const Profile = () => {
-  const { currentUser, logout } = useAuth();
+  const { currentUser } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const { trackActivity } = useActivityTracker();
@@ -60,6 +58,8 @@ const Profile = () => {
     });
   };
 
+  const toggleEditing = () => setIsEditing(!isEditing);
+
   return (
     <Layout>
       <div className="flex flex-col gap-6">
@@ -69,44 +69,14 @@ const Profile = () => {
         </div>
 
         <div className="flex flex-col md:flex-row gap-6">
-          <Card className="md:w-1/3">
-            <CardContent className="pt-6 flex flex-col items-center">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={profileImage || ""} />
-                <AvatarFallback className="text-2xl">{profileData.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <h2 className="mt-4 text-xl font-semibold">{profileData.name}</h2>
-              <p className="text-sm text-muted-foreground">{profileData.email}</p>
-              <Badge className="mt-2 bg-primary text-primary-foreground">
-                {currentUser?.plan || 'Premium'} Plan
-              </Badge>
-              <div className="w-full mt-4">
-                <FileUploader
-                  type="image" 
-                  maxSizeMB={5}
-                  onUploadComplete={handleProfileImageUpload}
-                  className="mb-4"
-                />
-                <Button
-                  className="w-full"
-                  variant={isEditing ? "default" : "outline"}
-                  onClick={() => setIsEditing(!isEditing)}
-                >
-                  {isEditing ? (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save
-                    </>
-                  ) : (
-                    <>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit Profile
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <ProfileSidebar 
+            profileData={profileData}
+            profileImage={profileImage}
+            isEditing={isEditing}
+            currentUser={currentUser}
+            onProfileImageUpload={handleProfileImageUpload}
+            toggleEditing={toggleEditing}
+          />
 
           <div className="md:w-2/3">
             <Tabs defaultValue="personal">
@@ -130,317 +100,32 @@ const Profile = () => {
               </TabsList>
 
               <TabsContent value="personal" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
-                    <CardDescription>Update your personal contact information</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-4">
-                      <div className="grid gap-2">
-                        <label htmlFor="name" className="text-sm font-medium">Full Name</label>
-                        <Input 
-                          id="name"
-                          name="name"
-                          value={profileData.name}
-                          onChange={handleInputChange}
-                          disabled={!isEditing}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <label htmlFor="email" className="text-sm font-medium">Email</label>
-                        <Input 
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={profileData.email}
-                          onChange={handleInputChange}
-                          disabled={!isEditing}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <label htmlFor="phone" className="text-sm font-medium">Phone Number</label>
-                        <Input 
-                          id="phone"
-                          name="phone"
-                          value={profileData.phone}
-                          onChange={handleInputChange}
-                          disabled={!isEditing}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <label htmlFor="address" className="text-sm font-medium">Address</label>
-                        <Input 
-                          id="address"
-                          name="address"
-                          value={profileData.address}
-                          onChange={handleInputChange}
-                          disabled={!isEditing}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <label htmlFor="emergencyContact" className="text-sm font-medium">Emergency Contact</label>
-                        <Input 
-                          id="emergencyContact"
-                          name="emergencyContact"
-                          value={profileData.emergencyContact}
-                          onChange={handleInputChange}
-                          disabled={!isEditing}
-                        />
-                      </div>
-                      
-                      <div className="flex justify-end mt-4">
-                        {isEditing && (
-                          <Button onClick={handleSave}>Save Changes</Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <PersonalInfoTab 
+                  profileData={profileData}
+                  isEditing={isEditing}
+                  handleInputChange={handleInputChange}
+                  handleSave={handleSave}
+                />
               </TabsContent>
 
               <TabsContent value="medical" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Medical Information</CardTitle>
-                    <CardDescription>Update your medical profile and health information</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-4">
-                      <div className="grid gap-2">
-                        <label htmlFor="primaryCare" className="text-sm font-medium">Primary Care Physician</label>
-                        <Input 
-                          id="primaryCare"
-                          name="primaryCare"
-                          value={profileData.primaryCare}
-                          onChange={handleInputChange}
-                          disabled={!isEditing}
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <label htmlFor="bloodType" className="text-sm font-medium">Blood Type</label>
-                          <Input 
-                            id="bloodType"
-                            name="bloodType"
-                            value={profileData.bloodType}
-                            onChange={handleInputChange}
-                            disabled={!isEditing}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <label htmlFor="allergies" className="text-sm font-medium">Allergies</label>
-                          <Input 
-                            id="allergies"
-                            name="allergies"
-                            value={profileData.allergies}
-                            onChange={handleInputChange}
-                            disabled={!isEditing}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid gap-2">
-                        <label htmlFor="medications" className="text-sm font-medium">Current Medications</label>
-                        <Input 
-                          id="medications"
-                          name="medications"
-                          value={profileData.medications}
-                          onChange={handleInputChange}
-                          disabled={!isEditing}
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <label htmlFor="height" className="text-sm font-medium">Height</label>
-                          <Input 
-                            id="height"
-                            name="height"
-                            value={profileData.height}
-                            onChange={handleInputChange}
-                            disabled={!isEditing}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <label htmlFor="weight" className="text-sm font-medium">Weight</label>
-                          <Input 
-                            id="weight"
-                            name="weight"
-                            value={profileData.weight}
-                            onChange={handleInputChange}
-                            disabled={!isEditing}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-between items-center mt-4">
-                        <ExportMedicalHistory />
-                        {isEditing && (
-                          <Button onClick={handleSave}>Save Changes</Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <MedicalInfoTab 
+                  profileData={profileData}
+                  isEditing={isEditing}
+                  handleInputChange={handleInputChange}
+                  handleSave={handleSave}
+                />
               </TabsContent>
               
               <TabsContent value="documents" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Documents & Media</CardTitle>
-                    <CardDescription>Upload and manage your health-related documents and media</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-lg font-medium mb-2">Upload Files</h3>
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                          <div>
-                            <h4 className="text-sm font-medium flex items-center mb-2">
-                              <FileImage className="h-4 w-4 mr-1" />
-                              Images
-                            </h4>
-                            <FileUploader type="image" maxSizeMB={10} />
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-medium flex items-center mb-2">
-                              <FileVideo className="h-4 w-4 mr-1" />
-                              Videos
-                            </h4>
-                            <FileUploader type="video" maxSizeMB={100} />
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-medium flex items-center mb-2">
-                              <File className="h-4 w-4 mr-1" />
-                              Documents
-                            </h4>
-                            <FileUploader type="document" maxSizeMB={20} />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h3 className="text-lg font-medium mb-2">Recent Uploads</h3>
-                        <div className="border rounded-md p-4 text-center text-muted-foreground text-sm">
-                          No recent uploads. Upload files to see them here.
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <DocumentsTab />
               </TabsContent>
 
               <TabsContent value="security" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Account Security</CardTitle>
-                    <CardDescription>Manage your account security settings</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-lg font-medium">Password</h3>
-                        <div className="grid gap-4 mt-2">
-                          <div className="grid gap-2">
-                            <label htmlFor="currentPassword" className="text-sm font-medium">Current Password</label>
-                            <Input id="currentPassword" type="password" disabled={!isEditing} />
-                          </div>
-                          <div className="grid gap-2">
-                            <label htmlFor="newPassword" className="text-sm font-medium">New Password</label>
-                            <Input id="newPassword" type="password" disabled={!isEditing} />
-                          </div>
-                          <div className="grid gap-2">
-                            <label htmlFor="confirmPassword" className="text-sm font-medium">Confirm New Password</label>
-                            <Input id="confirmPassword" type="password" disabled={!isEditing} />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h3 className="text-lg font-medium">Two-Factor Authentication</h3>
-                        <p className="text-sm text-muted-foreground mt-1">Enhance your account security with 2FA</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <div>
-                            <h4 className="text-sm font-medium">Status: <span className="text-health-red">Disabled</span></h4>
-                          </div>
-                          <Button variant="outline" className="flex gap-1">
-                            <Key className="h-4 w-4" />
-                            Enable 2FA
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h3 className="text-lg font-medium">Connected Devices</h3>
-                        <ul className="space-y-2 mt-2">
-                          <li className="border rounded-md p-3">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <p className="font-medium">iPhone 13 Pro</p>
-                                <p className="text-xs text-muted-foreground">Last active: {new Date().toLocaleString()}</p>
-                                <p className="text-xs text-muted-foreground">New York, USA (192.168.1.1)</p>
-                              </div>
-                              <Badge>Current Device</Badge>
-                            </div>
-                          </li>
-                          <li className="border rounded-md p-3">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <p className="font-medium">MacBook Pro</p>
-                                <p className="text-xs text-muted-foreground">Last active: Yesterday, 3:24 PM</p>
-                                <p className="text-xs text-muted-foreground">San Francisco, USA (192.168.0.2)</p>
-                              </div>
-                              <Button variant="ghost" size="sm" className="h-8">Revoke</Button>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                      
-                      <div className="border-t pt-4">
-                        <Button variant="destructive" className="flex gap-1">
-                          <AlertCircle className="h-4 w-4" />
-                          Delete Account
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="mt-4">
-                  <CardHeader>
-                    <CardTitle>Subscription Plan</CardTitle>
-                    <CardDescription>Manage your subscription and payment information</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="border rounded-md p-4">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h3 className="font-medium">{currentUser?.plan || 'Premium'} Plan</h3>
-                            <p className="text-sm text-muted-foreground">Billed annually</p>
-                          </div>
-                          <Button variant="outline">Upgrade</Button>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h3 className="text-lg font-medium">Payment Information</h3>
-                        <div className="mt-2 flex items-center justify-between border rounded-md p-3">
-                          <div className="flex items-center">
-                            <CreditCard className="h-5 w-5 mr-2 text-muted-foreground" />
-                            <div>
-                              <p className="font-medium">Visa ending in 4242</p>
-                              <p className="text-xs text-muted-foreground">Expires 12/24</p>
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">Update</Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <SecurityTab 
+                  isEditing={isEditing} 
+                  currentUser={currentUser} 
+                />
               </TabsContent>
             </Tabs>
           </div>
