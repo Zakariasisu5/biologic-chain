@@ -37,22 +37,15 @@ export function useFileUpload({
           return;
         }
 
-        // List buckets to check access
-        const { data, error } = await supabase.storage.listBuckets();
+        // Check if the bucket exists by trying to list objects
+        const { data, error } = await supabase.storage.from('user-files').list();
         
         if (error) {
-          console.error('Error checking storage buckets:', error);
+          console.error('Error checking user-files bucket:', error);
           setBucketStatus('unavailable');
-          return;
-        }
-        
-        const userFilesBucket = data.find(bucket => bucket.name === 'user-files');
-        if (userFilesBucket) {
+        } else {
           console.log('user-files bucket found and accessible');
           setBucketStatus('available');
-        } else {
-          console.error('user-files bucket not found in available buckets');
-          setBucketStatus('unavailable');
         }
       } catch (err) {
         console.error('Error checking bucket access:', err);
