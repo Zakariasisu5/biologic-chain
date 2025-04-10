@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FileUploader } from '@/components/profile/FileUploader';
@@ -7,18 +6,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { FileObject as SupabaseFileObject } from '@supabase/storage-js';
 
-interface FileObject {
-  id: string;
-  name: string;
-  created_at: string;
-  updated_at: string;
-  last_accessed_at: string;
-  metadata: any;
-  bucketId: string;
-  owner: string;
-  size: number;
-  mimetype: string;
+interface FileObject extends SupabaseFileObject {
+  // Add any additional properties that your component uses
 }
 
 export const DocumentsTab: React.FC = () => {
@@ -27,7 +18,6 @@ export const DocumentsTab: React.FC = () => {
   const { currentUser } = useAuth();
   const { toast } = useToast();
 
-  // Fetch recent uploads when component mounts or currentUser changes
   useEffect(() => {
     fetchRecentUploads();
   }, [currentUser]);
@@ -37,7 +27,6 @@ export const DocumentsTab: React.FC = () => {
 
     setLoading(true);
     try {
-      // List files from the user's directory
       const { data, error } = await supabase.storage
         .from('user-files')
         .list(currentUser.id, {
@@ -50,7 +39,7 @@ export const DocumentsTab: React.FC = () => {
         return;
       }
 
-      setRecentUploads(data || []);
+      setRecentUploads(data as unknown as FileObject[]);
     } catch (err) {
       console.error('Error in fetchRecentUploads:', err);
     } finally {
@@ -76,7 +65,6 @@ export const DocumentsTab: React.FC = () => {
         return;
       }
       
-      // Refresh the list
       fetchRecentUploads();
       
       toast({
@@ -88,7 +76,6 @@ export const DocumentsTab: React.FC = () => {
     }
   };
 
-  // Helper to get appropriate icon based on file type
   const getFileIcon = (mimetype: string) => {
     if (mimetype?.startsWith('image/')) return <FileImage className="h-5 w-5 text-blue-500" />;
     if (mimetype?.startsWith('video/')) return <FileVideo className="h-5 w-5 text-purple-500" />;
@@ -158,11 +145,11 @@ export const DocumentsTab: React.FC = () => {
                   {recentUploads.map((file) => (
                     <div key={file.id} className="flex items-center justify-between p-3 hover:bg-muted/30">
                       <div className="flex items-center gap-2">
-                        {getFileIcon(file.mimetype)}
+                        {getFileIcon(file.metadata?.mimetype || '')}
                         <div>
                           <p className="text-sm font-medium">{file.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {new Date(file.created_at).toLocaleDateString()} • {Math.round(file.size / 1024)} KB
+                            {new Date(file.created_at).toLocaleDateString()} • {Math.round((file.metadata?.size || 0) / 1024)} KB
                           </p>
                         </div>
                       </div>
