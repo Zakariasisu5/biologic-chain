@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FileUploader } from '@/components/profile/FileUploader';
-import { FileImage, FileVideo, File, Trash2 } from 'lucide-react';
+import { FileImage, FileVideo, File, Trash2, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,11 @@ export const DocumentsTab: React.FC = () => {
 
       if (error) {
         console.error('Error fetching files:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error fetching files',
+          description: error.message,
+        });
         return;
       }
 
@@ -134,7 +140,17 @@ export const DocumentsTab: React.FC = () => {
           </div>
           
           <div>
-            <h3 className="text-lg font-medium mb-2">Recent Uploads</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-medium">Recent Uploads</h3>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={fetchRecentUploads}
+                disabled={loading}
+              >
+                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
             {loading ? (
               <div className="border rounded-md p-4 text-center text-muted-foreground text-sm">
                 Loading recent uploads...
