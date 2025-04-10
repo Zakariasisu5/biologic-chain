@@ -63,7 +63,7 @@ const Sidebar = () => {
         <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center">
           <Shield size={20} className="text-primary-foreground" />
         </div>
-        <h1 className="text-xl font-bold">Chain Wallet</h1>
+        <h1 className="text-xl font-bold">Biologic Chain</h1>
       </div>
 
       <nav className="space-y-2 overflow-y-auto flex-1 pr-1">
