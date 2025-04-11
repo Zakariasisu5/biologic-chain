@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import ActivityTracker from "@/components/activity/ActivityTracker";
+import AIAssistant from "@/components/ai-assistant/AIAssistant";
+import { useAuth } from "@/contexts/AuthContext";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -24,6 +26,14 @@ import Settings from "./pages/Settings";
 import UserActivities from "./pages/UserActivities";
 
 const queryClient = new QueryClient();
+
+// Helper component to conditionally render AI Assistant only for authenticated users
+const AIAssistantWrapper = () => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) return null;
+  return <AIAssistant />;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -53,6 +63,7 @@ const App = () => (
             
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <AIAssistantWrapper />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
