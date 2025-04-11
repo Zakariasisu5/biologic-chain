@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Bell, Search, LogOut } from 'lucide-react';
+import { Bell, Search, LogOut, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
