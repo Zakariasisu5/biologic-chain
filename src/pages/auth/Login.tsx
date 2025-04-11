@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Heart } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useActivityTracker } from '@/utils/activityTracker';
 
@@ -60,9 +60,9 @@ const Login = () => {
       <div className="w-full max-w-md px-6 py-8 bg-card rounded-lg shadow-lg border">
         <div className="flex items-center justify-center mb-8">
           <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center">
-            <Heart size={28} className="text-primary-foreground" />
+            <Shield size={28} className="text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold ml-3">Aura Health</h1>
+          <h1 className="text-3xl font-bold ml-3">Biologic Chain</h1>
         </div>
         
         <h2 className="text-2xl font-semibold mb-6 text-center">Login to Your Account</h2>

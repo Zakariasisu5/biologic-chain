@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -91,8 +90,8 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ isEditing, currentUser
 
       <Card className="mt-4">
         <CardHeader>
-          <CardTitle>Subscription Plan</CardTitle>
-          <CardDescription>Manage your subscription and payment information</CardDescription>
+          <CardTitle>Biologic Chain Subscription</CardTitle>
+          <CardDescription>Manage your Biologic Chain subscription and payment information</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
